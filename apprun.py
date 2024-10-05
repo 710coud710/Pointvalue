@@ -253,4 +253,4 @@ def download_file():
     return send_file(limited_filepath, as_attachment=True, download_name=limited_filepath)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
