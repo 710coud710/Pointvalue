@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keyword Trending</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        .data {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data th, .data td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        .data th {
+            background-color: #f2f2f2;
+        }
+
+        .data tr:hover {
+            background-color: #ddd;
+        }
+
+        .search-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-buttons button {
+            width: 100%;
+        }
+        .sort-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .download-btn {
+            font-size: 0.875rem; 
+            padding: 5px 10px;   
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="mb-4">Point Value Result</h2>
+        <div class="container mt-4 text-end">
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">Quay lại</a>
+        </div>
+        {% if current_user.is_authenticated %}
+        <form method="POST" action="/search">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <input type="text" name="search_keyword" class="form-control" placeholder="Nhập từ khóa tìm kiếm" value="{{ search_keyword }}">
+                </div>
+                <div class="col-md-2 search-buttons">
+                    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                </div>
+            </div>
+        </form>
+        {% else %}
+            <p>Đăng nhập để sử dụng tính năng tìm kiếm và tải xuống!!!</p>
+        {% endif %}
+
+        <form method="GET" action="/download">
+            <div class="row mb-2">
+                {% if current_user.is_authenticated %}
+                <div class="col-md-2">
+                    <!-- Ô chọn tải xuống số lượng keyword -->
+                    <select id="keyword-limit-select" name="keyword_limit_select" class="form-select">
+                        <option value="all">Tải xuống tất cả</option>
+                        <option value="30">30 keyword</option>
+                        <option value="50">50 keyword</option>
+                        <option value="100">100 keyword</option>
+                        <option value="150">150 keyword</option>
+                        <option value="200">200 keyword</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-2 btn-container">
+                    <button type="submit" class="btn btn-info download-btn">Tải xuống</button>
+                </div>
+                {% else %}
+                <div class="col-md-2 btn-container">
+                    
+                </div>
+                {% endif %}
+            </div>
+        </form>
+        
+        <form method="GET" action="/calculate">
+            <div class="row sort-options">
+                <div class="col-md-4">
+                    <select name="sort_column" class="form-select">
+                        <option value="Point Value" {% if sort_column == 'Point Value' %} selected {% endif %}>Point Value</option>
+                        <option value="Search Volume (Global)" {% if sort_column == 'Search Volume (Global)' %} selected {% endif %}>Search Volume</option>
+                        <option value="CPC (Global)" {% if sort_column == 'CPC (Global)' %} selected {% endif %}>CPC</option>
+                        <option value="Competition (Global)" {% if sort_column == 'Competition (Global)' %} selected {% endif %}>Competition</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-2">
+                    <select name="order" class="form-select">
+                        <option value="asc" {% if order == 'asc' %} selected {% endif %}>Tăng dần</option>
+                        <option value="desc" {% if order == 'desc' %} selected {% endif %}>Giảm dần</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="month" class="form-select">
+                        <option value="" selected>Xem tháng</option>
+                        <option value="1" {% if month == '1' %} selected {% endif %}>Tháng 1</option>
+                        <option value="2" {% if month == '2' %} selected {% endif %}>Tháng 2</option>
+                        <option value="3" {% if month == '3' %} selected {% endif %}>Tháng 3</option>
+                        <option value="4" {% if month == '4' %} selected {% endif %}>Tháng 4</option>
+                        <option value="5" {% if month == '5' %} selected {% endif %}>Tháng 5</option>
+                        <option value="6" {% if month == '6' %} selected {% endif %}>Tháng 6</option>
+                        <option value="7" {% if month == '7' %} selected {% endif %}>Tháng 7</option>
+                        <option value="8" {% if month == '8' %} selected {% endif %}>Tháng 8</option>
+                        <option value="9" {% if month == '9' %} selected {% endif %}>Tháng 9</option>
+                        <option value="10" {% if month == '10' %} selected {% endif %}>Tháng 10</option>
+                        <option value="11" {% if month == '11' %} selected {% endif %}>Tháng 11</option>
+                        <option value="12" {% if month == '12' %} selected {% endif %}>Tháng 12</option>
+                    </select>
+                </div>
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-success w-100 mt-2">Sắp xếp</button>
+                </div>
+            </div>
+        </form>
+        
+
+        {% if message %}
+        <div class="alert alert-warning" role="alert">
+            {{ message }}
+        </div>
+        {% endif %}
+
+        <div class="table-responsive">
+            {{ tables | safe }}
+        </div>
+    </div>
+</body>
+</html>
